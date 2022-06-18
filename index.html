@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="style.css">
+<title>LETTER BEATS</title>
+<script src="snd.js"></script>
+<script src="map.js"></script>
+<script src="play.js"></script>
+<script src="selection.js"></script>
+<script src="footer.js"></script>
+<script src="start.js"></script>
+<script type="text/javascript">
+
+    var hasLoaded = false;
+    var isSoundScreen = false;
+    var isGameScreen = false;
+    var infoWindow = false;
+    var allBuffersLoaded = false;
+    var isPlaying = false;
+    var isInfoScreen = false;
+    var bg1fastplaying = false;
+    var bg1medplaying = false;
+    var bg1slowplaying = false;
+    var bg2fastplaying = false;
+    var bg2medplaying = false;
+    var bg2slowplaying = false;
+    var loadingSound = false;
+    var firstPlay = false;
+    var currentSoundtrack = 0;
+    
+    const scale = 2;
+    const w = 600;
+    const h = 540; //440
+    const width = w*scale;
+    const height = h*scale;
+    const tileW = 135;
+    const tileH = 135;
+    const mapW = 8; //28
+    const mapH = 4; //12
+    var speed = 750;
+
+    const xOffset = tileW * 0.1;
+	const yOffset = tileH * 0.5;
+	const xScale = 1.1;
+	const yScale = 2;
+
+    var currentSounds = [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false];
+    var loadedSounds = 0;
+    
+    const numberOfSounds = 33;
+
+    var ctx = null;
+
+    var tileTypes = {};
+    var itemTypes = {};
+    var gameMap = [];
+    var itemMap = [];
+    var mousePos = [];
+    var isMap = true;
+    var mapTick = true;
+
+    var loadedSound = null;
+    var clickTick = true;
+    var currentSecond = 0, frameCount = 0, framesLastSecond = 0, lastFrameTime = 0;
+
+    const audioCtx = new AudioContext();
+
+    //loading background sounds
+    load01(); load02(); load03(); load04(); load05(); load06(); load07(); load08(); load09(); load10(); 
+    load11(); load12(); load13(); load14(); load15(); load16(); load17(); load18(); load19(); load20(); 
+    load21(); load22(); load23(); load24();
+
+    loadbg1slow(); loadbg1med(); loadbg1fast();
+    loadbg2slow(); loadbg2med(); loadbg2fast();
+
+    loadclear(); loadclick(); loadshuffle();
+
+    //declaring images
+    var tileset = null, tilesetURL = "img/tiles.png",  tilesetLoaded = false;
+    var bg = null, bgURL = "img/bg.png",  bgLoaded = false;
+    
+
+    //////////////////////////////////
+
+    //Tile Stuff
+    var floorTypes = {
+        solid : 0,
+        path : 1,
+        destructible : 2,
+        ice : 3,
+        conveyorU : 4,
+        conveyorD : 5,
+        conveyorL : 6,
+        conveyorR : 7
+    };
+
+    tileTypes = 
+    {
+
+        0: { floor:floorTypes.solid, sprite:[{x:tileW*0, y:tileH*0, w:tileW, h:tileH}]}, //blank unclickable
+        1: { floor:floorTypes.path, sprite:[{x:tileW*1, y:tileH*0, w:tileW, h:tileH}]},
+        2: { floor:floorTypes.path, sprite:[{x:tileW*2, y:tileH*0, w:tileW, h:tileH}]},
+        3: { floor:floorTypes.path, sprite:[{x:tileW*3, y:tileH*0, w:tileW, h:tileH}]},
+        4: { floor:floorTypes.path, sprite:[{x:tileW*4, y:tileH*0, w:tileW, h:tileH}]},
+        5: { floor:floorTypes.path, sprite:[{x:tileW*5, y:tileH*0, w:tileW, h:tileH}]},
+        6: { floor:floorTypes.path, sprite:[{x:tileW*6, y:tileH*0, w:tileW, h:tileH}]},
+        7: { floor:floorTypes.path, sprite:[{x:tileW*1, y:tileH*1, w:tileW, h:tileH}]},
+        8: { floor:floorTypes.path, sprite:[{x:tileW*2, y:tileH*1, w:tileW, h:tileH}]},
+        9: { floor:floorTypes.path, sprite:[{x:tileW*3, y:tileH*1, w:tileW, h:tileH}]},
+        10: { floor:floorTypes.path, sprite:[{x:tileW*4, y:tileH*1, w:tileW, h:tileH}]},
+        11: { floor:floorTypes.path, sprite:[{x:tileW*5, y:tileH*1, w:tileW, h:tileH}]},
+        12: { floor:floorTypes.path, sprite:[{x:tileW*6, y:tileH*1, w:tileW, h:tileH}]},
+        13: { floor:floorTypes.path, sprite:[{x:tileW*1, y:tileH*2, w:tileW, h:tileH}]},
+        14: { floor:floorTypes.path, sprite:[{x:tileW*2, y:tileH*2, w:tileW, h:tileH}]},
+        15: { floor:floorTypes.path, sprite:[{x:tileW*3, y:tileH*2, w:tileW, h:tileH}]},
+        16: { floor:floorTypes.path, sprite:[{x:tileW*4, y:tileH*2, w:tileW, h:tileH}]},
+        17: { floor:floorTypes.path, sprite:[{x:tileW*5, y:tileH*2, w:tileW, h:tileH}]},
+        18: { floor:floorTypes.path, sprite:[{x:tileW*6, y:tileH*2, w:tileW, h:tileH}]},
+        19: { floor:floorTypes.path, sprite:[{x:tileW*1, y:tileH*3, w:tileW, h:tileH}]},
+        20: { floor:floorTypes.path, sprite:[{x:tileW*2, y:tileH*3, w:tileW, h:tileH}]},
+        21: { floor:floorTypes.path, sprite:[{x:tileW*3, y:tileH*3, w:tileW, h:tileH}]},
+        22: { floor:floorTypes.path, sprite:[{x:tileW*4, y:tileH*3, w:tileW, h:tileH}]},
+        23: { floor:floorTypes.path, sprite:[{x:tileW*5, y:tileH*3, w:tileW, h:tileH}]},
+        24: { floor:floorTypes.path, sprite:[{x:tileW*6, y:tileH*3, w:tileW, h:tileH}]}
+
+    };
+
+    itemTypes = {
+
+        0: { },
+        1: {floor:floorTypes.path, sprite:[{x:tileW*0, y:tileH*1, w:tileW, h:tileH}] }
+
+    }
+
+    //Misc functions
+    function toIndex(x, y)
+    {
+        return((y * mapW) + x);
+    }
+
+    function randomInt(max)
+    {
+        rand_val = Math.floor(Math.random() * Math.floor(max + 1))
+        return rand_val;
+    }
+
+    //Viewport Scanning
+    var viewport = { screen : [0,0] };
+
+    window.onload = function()
+    {
+        ctx = document.getElementById('game').getContext("2d");
+        requestAnimationFrame(drawGame);
+        ctx.font = "bold 10pt sans-serif";
+
+        //window.addEventListener('mousemove', function(e) { getHoverOver(e) });
+        window.addEventListener('click', function(e) { clickHandler(e) });
+        window.addEventListener('mousemove', function(e) { mousePos = getHoverOver(e); });
+        //document.getElementById("slider").addEventListener("change", function() 
+        
+        viewport.screen = [document.getElementById('game').width,
+            document.getElementById('game').height];
+
+        //tileset code goes here
+        tileset = new Image();     
+        tileset.onerror = function()
+        {
+            ctx = null;
+            alert("Failed loading tileset.");
+        };
+        tileset.onload = function() { bgLoaded = true; }
+        tileset.src = tilesetURL;
+
+        bg = new Image();     
+        bg.onerror = function()
+        {
+            ctx = null;
+            alert("Failed loading image.");
+        };
+        bg.onload = function() { bgLoaded = true; }
+        bg.src = bgURL;
+        
+    };
+
+    function drawGame()
+    {
+        if(ctx==null) { return; }
+        var currentFrameTime = Date.now();
+        var timeElapsed = currentFrameTime - lastFrameTime;
+        var sec = Math.floor(Date.now()/1000);
+        if(sec!=currentSecond)
+        {
+            currentSecond = sec;
+            framesLastSecond = frameCount;
+            frameCount = 1;
+        }
+        else { frameCount++; }
+
+        if(isGameScreen) //app is playing 
+        { 
+            if(isMap == true) 
+            { 
+                if (mapTick == true)
+                {
+                    drawMap();
+                    mapTick = false;
+                }
+
+                //draw bg
+                ctx.fillStyle = "#f2f2f2";
+                ctx.fillRect(0, 0, width, height); 
+                ctx.drawImage(bg, 0, 0, width, height);
+                
+                if(isPlaying) { playHandler(currentFrameTime)}
+                if(loadingSound) { soundLoader(currentFrameTime) }
+
+                drawMapTiles();
+            }
+            if(loadedSound != null) { updateLoadedSound(); }
+            
+        }
+        else if(!hasLoaded) //loading sounds
+        { loadbarHandler(); }
+
+        // frameRate();
+        lastFrameTime = currentFrameTime;
+        requestAnimationFrame(drawGame);
+    }
+
+
+</script>
+
+</head>
+<body id="body">
+    <header>
+        <div id="gamehead">
+            <p>Sound Bank</p>
+        </div>
+    </header>
+    <main id="main">
+        <canvas id="game" width="1200" height="1080"></canvas>
+        
+        <div id="loadscreen">
+            <img id="titleimg" src="img/title.png">
+            <p>Compose music with letter sounds!</p>
+            <div id="loadbarfull"> </div>
+            <div id="loadbarloading"></div>
+            <p id="loadtext">Sounds are loading...</p>
+        </div>
+
+        <div id="soundscreen">
+            <br>
+            <p id="choosetext">Choose up to 5 sounds to get started.</p>
+            <br>
+            <img id="t1" src="img/t1.png" onclick="togglet(this.id)">
+            <img id="t2" src="img/t2.png" onclick="togglet(this.id)">
+            <img id="t3" src="img/t3.png" onclick="togglet(this.id)">
+            <img id="t4" src="img/t4.png" onclick="togglet(this.id)">
+            <img id="t5" src="img/t5.png" onclick="togglet(this.id)">
+            <img id="t6" src="img/t6.png" onclick="togglet(this.id)">
+            <img id="t7" src="img/t7.png" onclick="togglet(this.id)">
+            <img id="t8" src="img/t8.png" onclick="togglet(this.id)">
+            <img id="t9" src="img/t9.png" onclick="togglet(this.id)">
+            <img id="t10" src="img/t10.png" onclick="togglet(this.id)">
+            <img id="t11" src="img/t11.png" onclick="togglet(this.id)">
+            <img id="t12" src="img/t12.png" onclick="togglet(this.id)">
+            <img id="t13" src="img/t13.png" onclick="togglet(this.id)">
+            <img id="t14" src="img/t14.png" onclick="togglet(this.id)">
+            <img id="t15" src="img/t15.png" onclick="togglet(this.id)">
+            <img id="t16" src="img/t16.png" onclick="togglet(this.id)">
+            <img id="t17" src="img/t17.png" onclick="togglet(this.id)">
+            <img id="t18" src="img/t18.png" onclick="togglet(this.id)">
+            <img id="t19" src="img/t19.png" onclick="togglet(this.id)">
+            <img id="t20" src="img/t20.png" onclick="togglet(this.id)">
+            <img id="t21" src="img/t21.png" onclick="togglet(this.id)">
+            <img id="t22" src="img/t22.png" onclick="togglet(this.id)">
+            <img id="t23" src="img/t23.png" onclick="togglet(this.id)">
+            <img id="t24" src="img/t24.png" onclick="togglet(this.id)">
+            <div id="buttondiv">
+                <button id="pickforme" onclick="pickFiveSounds()">Pick for me!</button>
+                <button id="gamenotready">Let's compose!</button>
+                <button id="gameready" onclick="toGameScreen()">Let's compose!</button>
+            </div>
+        </div>
+
+        <div id="infoscreen">
+            <img id="infotitle" src="img/title.png">
+            <div id="infotext">
+                <ul>
+                    <li>Click on a sound in the <span class="bold">Sound Bank</span> to select it.</li>
+                    <li>Add the selected sound to your composition by clicking on any square.</li>
+                    <li>Click on any white space to clear your selected sound, or keep adding sounds to your composition by clicking on more squares.</li>
+                    <li>If you don't have a sound selected, you can delete sounds from your composition by clicking on them.</li>
+                    <li>Press <span class="bold">Play</span> to hear your composition.</li>
+                    <li>Try hearing it with a different <span class="bold">Speed.</span> or <span class="bold">Soundtrack!</span></li>
+                    <li>Hear a surprise pattern by clicking <span class="bold">Shuffle.</span></li>
+                    <li>Begin again with new sounds by clicking <span class="bold">Start Over.</span></li>
+                    <li>Open and close this window by clicking <span class="bold">Info.</span></li>
+
+                </ul>
+
+            </div>
+        </div>
+
+    </main> 
+    <footer>
+        <div id="gamefoot">
+            <div id="playtoggle">
+                <img id="playbutton" src="img/playimg.png" onclick="togglePlay()">
+                <p id="playtext">Play</p>
+            </div>
+
+            <div id="speedselect">
+                <div id="slow">
+                    <img id="imgslow" src="img/imgslow2.png" onclick="toggleSpeed(750)">
+                </div>
+                <div id="medium">
+                    <img id="imgmed" src="img/imgmed.png" onclick="toggleSpeed(500)">
+                </div>
+                <div id="fast">
+                    <img id="imgfast" src="img/imgfast.png" onclick="toggleSpeed(300)">
+                </div>
+                <p id="speedtext">Speed</p>
+            </div>
+
+            <div id="bgmusic">
+                <div id="nobgdiv">
+                    <img id="nobg" src="img/bgnone.png" onclick="toggleSoundtrack(0)">
+                </div>
+                <div id="bg1div">
+                    <img id="bg1" src="img/bg1.png" onclick="toggleSoundtrack(1)">
+                </div>
+                <div id="bg2div">
+                    <img id="bg2" src="img/bg2.png" onclick="toggleSoundtrack(2)">
+                </div>
+                <p id="speedtext">Soundtrack</p>
+
+            </div>
+
+            <div id="randomselect">
+                <img id="randombutton" src="img/randimg.png" onclick="randomPattern()">
+                <p id="shuffletext">Shuffle</p>
+            </div>
+
+            <div id="startover">
+                <img src="img/clearimg.png" onclick="toSoundScreen()">
+                <p>Start Over</p>
+            </div>
+
+            <div id="info">
+                <img id="infoimg" src="img/infoimg.png" onclick="toggleInfoScreen()"> 
+                <p>Info</p>
+            </div>
+
+        </div>
+    </footer>
+</body>
+</html>

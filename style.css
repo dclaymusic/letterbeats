@@ -1,0 +1,251 @@
+@font-face {
+    font-family: 'Andika';
+    src: url(andika.ttf);
+}
+
+html {
+    background-color: #ffffff; 
+    user-select: none;
+}
+
+body {
+    line-height: 16px;
+    user-select: none;
+    display: flex;
+    margin: 0px;
+    padding: 0px; 
+    overflow:hidden; 
+    font-family: 'Andika'; 
+    font-weight: bold;     
+}
+
+button {
+    font-family: 'Andika';
+}
+
+header, footer {
+    text-align: center;
+    background-color: #1f1f1f;
+    color: white;
+    min-width: 100px;
+    max-width: 100px;
+    padding: 10px 20px;
+    min-height: 520px;
+    max-height: 520px;
+}
+
+canvas, main {
+    /* background-color: #888888; */
+    margin: 0px;
+    padding: 0px;
+    width: 600px;
+    height: 540px;
+}
+
+
+#loadscreen {
+    /* center width - 290 */
+    /* center height - 180 */
+    width: 600px;
+    height: 540px;
+    position: fixed;
+    top: 0;
+    background-image: url('img/bgmenu.png');
+    background-size: 600px 540px;
+    border-radius: 10px;
+    /* background-color: #807c80; */
+    text-align: center;
+}
+
+#titleimg {
+    width: 60%;
+    padding: 0px;
+    margin-top: 80px;
+
+}
+
+#loadbarfull, #loadbarloading {
+    /* all px relative to loadscreen */
+    position: relative;
+    border: 2px solid black;
+    border-radius: 5px;
+    background-color: #f0ebf0;
+    height: 30px;
+    width: 200px;
+    margin: auto;
+}
+
+#loadbarfull {
+    box-shadow: 5px 5px rgba(0,0,0,0.5);
+}
+
+#loadbarloading {
+    top: -34px;
+    margin-bottom: -30px;
+    background-color: #ff0000;
+}
+
+#loadscreen p{
+    font-weight: bold;
+    font-size: 25px;
+}
+
+#gamehead {
+    margin-top: -20px;
+    font-size: 25px;
+    font-weight: bold;
+    line-height: 25px;
+}
+
+#soundscreen {
+    width: 600px;
+    height: 540px;
+    position: fixed;
+    top: 0;
+    background-image: url('img/bgmenu.png');
+    background-size: 600px 540px;
+    text-align: center;
+    visibility: hidden;
+}
+
+#choosetext {
+    margin: 10px;
+    font-size: 25px;
+}
+
+#soundscreen > img, #gamehead > img {
+    display: inline;
+    width: 80px;
+    height: 80px;
+    margin: 2px;
+    cursor: pointer;
+}
+
+#soundscreen > img {
+    opacity: 0.7;
+    border: solid 5px;
+    border-color: rgba(0,0,0,0);
+}
+
+
+#buttondiv {
+    display: flex;
+    margin: auto;
+}
+
+#soundscreen button {
+    border-radius: 5px;
+    /* box-shadow: 5px 5px black; */
+    font-size: 20px;
+    font-weight: bold;
+    padding: 10px;
+    margin: 0 auto;
+}
+
+#gameready, #pickforme {
+    background: rgba(67, 71, 109, 0.8);
+    color: white;
+}
+
+#pickforme:hover, #gameready:hover  {
+    background: rgb(77, 30, 88);
+    cursor: pointer;
+}
+
+#gamenotready {
+    background: rgba(35, 35, 36, 0.8);
+    color: black;
+    cursor: not-allowed;
+    position: relative;
+    left: 209px;
+}
+
+#gamehead {
+    visibility: hidden;
+}
+
+#gameready {
+    visibility: hidden;
+}
+
+#modeselect {
+    display: block;
+    line-height: 0;
+}
+
+
+#modeselect input{
+  display: none;
+}
+
+#gamefoot {
+    height: 500px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    visibility: hidden;
+}
+
+
+#gamefoot img {
+    width: 50px;
+    margin: 0;
+    cursor: pointer;
+}
+
+#gamefoot p {
+ margin-top: -5px;
+ margin-bottom: 0px;
+}
+
+#playtext, #shuffletext {
+    line-height: 25px;
+}
+
+#speedselect, #bgmusic {
+    padding: 0px;
+    margin: 0px;
+}
+
+#speedselect div, #bgmusic div{
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    margin-bottom: 10px;
+    padding: 0px;
+    background-color: white;
+}
+
+#speedselect img, #bgmusic img {
+   width: 100%;
+}
+
+#infoscreen {
+    width: 600px;
+    height: 540px;
+    position: fixed;
+    top: 0;
+    background-image: url('img/bgmenu.png');
+    background-size: 600px 540px;
+    text-align: center;
+    visibility: hidden;
+}
+
+#infotitle {
+    margin-top: 30px;
+    margin-left: auto;
+    width: 40%;
+}
+
+#infoscreen li {
+    margin-left: 10px;
+    text-align: left;
+    line-height: 1.1em;
+    padding: 8px;
+}
+
+#infoscreen .bold {
+    font-size: 1.1em;
+    text-decoration: underline;
+    font-weight: 900;
+}
