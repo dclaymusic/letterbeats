@@ -17,6 +17,7 @@ body {
     overflow:hidden; 
     font-family: 'Andika'; 
     font-weight: bold;     
+    justify-content: center;
 }
 
 button {
